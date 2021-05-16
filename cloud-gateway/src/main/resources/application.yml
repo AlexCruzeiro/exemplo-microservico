@@ -1,0 +1,49 @@
+server:
+  port: 9191
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: PESSOA-SERVICE
+          uri: lb://PESSOA-SERVICE
+          predicates:
+            - Path=/pessoas/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: PESSOA-SERVICE
+                fallbackuri: forward:/pessoaServiceFallback
+        - id: PRODUTO-SERVICE
+          uri: lb://PRODUTO-SERVICE
+          predicates:
+            - Path=/produtos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: PRODUTO-SERVICE
+                fallbackuri: forward:/produtoServiceFallback
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      default-zone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+
+hystrix:
+  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timoutInMilliseconds: 4000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
