@@ -4,4 +4,10 @@ server:
 spring:
   application:
     name: CONFIG-SERVER
-
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/AlexCruzeiro/exemplo-microservico
+          searchPaths: 'configuracoes'
+          clone-on-start: true
